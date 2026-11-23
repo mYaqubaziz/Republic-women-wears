@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Republic Womens Wears - Lahore</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
+body{background:#fff5f7}
+.topbar{background:#000;color:#fff;text-align:center;padding:8px;font-size:13px}
+nav{background:#ff2e7e;color:#fff;padding:12px 15px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100}
+.logo{font-weight:900;font-size:22px}
+.nav-links{display:flex;gap:15px}
+.nav-links a{color:#fff;text-decoration:none;font-size:14px;font-weight:bold}
+.cart-btn{background:#fff;color:#ff2e7e;border:none;padding:8px 14px;border-radius:20px;font-weight:bold;cursor:pointer}
+.hero{text-align:center;padding:30px 15px;background:linear-gradient(#ff2e7e,#ff8fb8);color:#fff}
+.hero h1{font-size:28px}
+.hero p{margin:10px 0}
+.btn{background:#fff;color:#ff2e7e;padding:10px 20px;border-radius:25px;display:inline-block;text-decoration:none;font-weight:bold;margin:5px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:15px}
+.card{background:#fff;border-radius:15px;overflow:hidden;box-shadow:0 2px 8px #ddd;text-align:center;padding-bottom:10px}
+.card img{width:100%;height:180px;object-fit:cover}
+.card h3{margin:8px 0 3px}
+.price{color:#ff2e7e;font-weight:bold}
+.add{background:#ff2e7e;color:#fff;border:none;padding:9px 15px;border-radius:20px;margin-top:8px;cursor:pointer;width:85%}
+.add.selected{background:green}
+#cartBox{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:3px solid #ff2e7e;padding:15px;display:none;z-index:200;max-height:70vh;overflow:auto}
+.admin{background:#fff;margin:15px;padding:15px;border-radius:15px}
+.admin input{width:100%;padding:10px;margin:5px 0;border:1px solid #ddd;border-radius:8px}
+.admin button{background:#000;color:#fff;padding:10px;width:100%;border:none;border-radius:8px}
+</style>
+</head>
+<body>
+
+<div class="topbar">Free Delivery in Lahore | WhatsApp: 0300-1234567</div>
+
+<nav>
+  <div class="logo">✨ REPUBLIC</div>
+  <div class="nav-links">
+    <a href="#home">Home</a>
+    <a href="#collection">Collection</a>
+    <a href="#add">Add Photo</a>
+  </div>
+  <button class="cart-btn" onclick="openCart()">🛒 Cart (<span id="cartCount">0</span>)</button>
+</nav>
+
+<div class="hero" id="home">
+  <h1>Lahore Ki Sab Se Stylish Boutique</h1>
+  <p>Bridal | Maxi | Sharara | Fancy Suits</p>
+  <a href="#collection" class="btn">View Collection</a>
+  <a href="https://wa.me/923001234567" class="btn">WhatsApp Par Order</a>
+</div>
+
+<div class="grid" id="collection"></div>
+
+<div class="admin" id="add">
+  <h3>➕ Nayi Tasveer Add Karein (Boutique ke liye)</h3>
+  <input type="text" id="pName" placeholder="Suit ka Naam - Jaise: Pink Maxi">
+  <input type="number" id="pPrice" placeholder="Price - Jaise: 12000">
+  <input type="file" id="pImage" accept="image/*">
+  <button onclick="addProduct()">Add Kar Dein</button>
+  <p style="font-size:12px;color:grey;margin-top:5px">Photo select karein, naam + price likhein, Add dabayein - wo collection mein aa jayegi.</p>
+</div>
+
+<div id="cartBox">
+  <h3>🛒 Apka Selected Order</h3>
+  <div id="cartItems"></div>
+  <p id="total" style="font-weight:bold;margin:10px 0"></p>
+  <button onclick="sendWhatsApp()" style="background:#25D366;color:#fff;padding:12px;width:100%;border:none;border-radius:10px;font-weight:bold;font-size:16px">WhatsApp Par Bhejein</button>
+  <button onclick="closeCart()" style="margin-top:8px;width:100%;padding:8px">Band Karein</button>
+</div>
+
+<script>
+let products = [
+  {name:"Bridal Lehenga", price:85000, img:"https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=500"},
+  {name:"Fancy Maxi", price:25000, img:"https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=500"},
+  {name:"Sharara Suit", price:18000, img:"https://images.unsplash.com/photo-1583391733956-6c78276477e2?w=500"},
+  {name:"Party Wear Suit", price:12000, img:"https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?w=500"},
+];
+let cart = [];
+function render(){
+  let box = document.getElementById('collection');
+  box.innerHTML = "";
+  products.forEach((p,i)=>{
+    let inCart = cart.includes(i);
+    box.innerHTML += `<div class="card">
+      <img src="${p.img}">
+      <h3>${p.name}</h3>
+      <div class="price">Rs. ${p.price}</div>
+      <button class="add ${inCart?'selected':''}" onclick="toggleCart(${i})">${inCart?'✔ Selected - Hatayein':'🛒 Select Karein'}</button>
+    </div>`;
+  });
+  document.getElementById('cartCount').innerText = cart.length;
+}
+function toggleCart(i){
+  if(cart.includes(i)){ cart = cart.filter(x=>x!==i); }
+  else{ cart.push(i); }
+  render();
+}
+function openCart(){
+  let box = document.getElementById('cartBox');
+  let items = document.getElementById('cartItems');
+  if(cart.length==0){ alert("Pehle koi suit Select karein!"); return; }
+  items.innerHTML = cart.map(i=>`✅ ${products[i].name} - Rs. ${products[i].price}<br>`).join("");
+  let total = cart.reduce((s,i)=>s+products[i].price,0);
+  document.getElementById('total').innerText = "Total: Rs. " + total;
+  box.style.display="block";
+}
+function closeCart(){ document.getElementById('cartBox').style.display="none"; }
+function sendWhatsApp(){
+  let msg = "Assalam-o-Alaikum! Mujhe ye suits chahiye:%0A%0A";
+  cart.forEach(i=>{ msg += `✔ ${products[i].name} - Rs. ${products[i].price}%0A`; });
+  let total = cart.reduce((s,i)=>s+products[i].price,0);
+  msg += `%0ATotal: Rs. ${total}%0A%0AApna Naam aur Address batayein?`;
+  window.open("https://wa.me/923001234567?text="+msg);
+}
+function addProduct(){
+  let name = document.getElementById('pName').value;
+  let price = document.getElementById('pPrice').value;
+  let file = document.getElementById('pImage').files[0];
+  if(!name || !price || !file){ alert("Naam, Price aur Photo teeno zaroori hain"); return; }
+  let reader = new FileReader();
+  reader.onload = function(e){
+    products.push({name:name, price:parseInt(price), img:e.target.result});
+    render();
+    alert("Ho gaya! Nayi tasveer add ho gayi.");
+  };
+  reader.readAsDataURL(file);
+}
+render();
+</script>
+</body>
+</html>
